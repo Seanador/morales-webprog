@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import logo from '../assets/SABM_logo.png';
+import logo from '../assets/images/SABM_logo.png';
 
 const links = [
   { label: 'Home', to: '/' },
@@ -7,31 +7,41 @@ const links = [
   { label: 'Articles', to: '/articles' },
 ];
 
-const navLinkClassName = ({ isActive }) =>
-  [
-    'rounded-full border-2 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] transition',
-    isActive
-      ? 'border-zinc-900 bg-zinc-900 text-zinc-50'
-      : 'border-transparent text-zinc-500 hover:border-zinc-900 hover:bg-zinc-50 hover:text-zinc-900',
-  ].join(' ');
-
 const NavBar = () => {
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b-2 border-zinc-900 bg-zinc-100/95 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-        <NavLink to="/" className="group flex items-center gap-3">
-          <div className="space-y-0.5">
-            <img src={logo} alt="Logo" className="h-15 w-auto object-contain transition-opacity duration-200 group-hover:opacity-70" />
-          </div>
+    <header className="fixed inset-x-0 top-0 z-50 border-b-2 border-teal-800 bg-teal-600 backdrop-blur">
+      <div className="flex items-center justify-between px-40 py-4">
+
+        <NavLink to="/" className="group flex items-center">
+          <img
+            src={logo}
+            alt="Logo"
+            className="h-15 w-auto object-contain transition-opacity duration-200 group-hover:opacity-70"
+          />
         </NavLink>
 
-        <nav className="hidden items-center gap-2 md:flex">
-          {links.map((link) => (
-            <NavLink key={link.to} to={link.to} end={link.to === '/'} className={navLinkClassName}>
-              {link.label}
-            </NavLink>
-          ))}
+        <nav className="hidden items-center md:flex">
+          <div className="flex items-center gap-2 rounded-full bg-teal-900/70 px-2 py-2">
+            {links.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.to === '/'}
+                className={({ isActive }) =>
+                  [
+                    'rounded-full px-6 py-2 text-[11px] font-semibold uppercase tracking-[0.24em] transition-all duration-200',
+                    isActive
+                      ? 'bg-cyan-100 text-zinc-900 shadow-sm'
+                      : 'text-zinc-200 hover:text-white',
+                  ].join(' ')
+                }
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </div>
         </nav>
+
       </div>
     </header>
   );

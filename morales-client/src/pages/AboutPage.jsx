@@ -1,26 +1,28 @@
 import Button from '../components/Button';
+import Me from '../assets/images/about_me.jpg';
+import spiderman from '../assets/images/spiderman_hobbies.jpg';   
+import jdm from '../assets/images/jdm.jpg';
+import jordan from '../assets/images/jordan.jpg';
+import antman from '../assets/images/antman.jpg';
 
 const AboutPage = () => {
     return (
         <div className="flex w-full flex-col gap-6">
             <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
                 <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
-                    <div className="rounded-3xl border-2 border-dashed border-zinc-300 bg-zinc-100 p-6">
-                        <div className="flex min-h-72 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                            <div className="h-28 w-28 rounded-full border-2 border-zinc-300 bg-zinc-100" />
-                        </div>
+                    <div className="rounded-[1.25rem] border-2 border-solid border-zinc-900 overflow-hidden w-100 h-100 ml-50">
+                        <img src={Me} className="h-100 w-100 object-fill block" />
                     </div>
 
                     <div>
                         <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-                            About Section
+                            About Developer Section
                         </p>
                         <h1 className="max-w-xl text-3xl font-bold leading-tight text-zinc-900 sm:text-4xl">
-                            A profile wireframe focused on layout, spacing, and content grouping.
+                            Sean Adrian Bautista Morales
                         </h1>
                         <p className="mt-4 max-w-lg text-sm leading-7 text-zinc-600 sm:text-base">
-                            This page follows the same low-fidelity system as the homepage with a simple hero,
-                            overview blocks, and supporting sections for profile details.
+                            I am a 21-year-old student developer whose main goal is to create solutions. Taking up BSIT-MWA in NU-Manila, I am fluent in 4 programming languages.
                         </p>
                         <div className="mt-6 flex flex-wrap gap-3">
                             <Button to="/" variant="primary">
@@ -42,30 +44,30 @@ const AboutPage = () => {
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                        <p className="text-2xl font-bold text-zinc-900">05</p>
+                        <p className="text-2xl font-bold text-zinc-900">21</p>
                         <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
-                            Years
+                            Years Old
                         </p>
                     </div>
 
                     <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                        <p className="text-2xl font-bold text-zinc-900">16</p>
+                        <p className="text-2xl font-bold text-zinc-900">3.85</p>
                         <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
-                            Projects
+                            General Weighted Average (2022-2026)
                         </p>
                     </div>
 
                     <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                        <p className="text-2xl font-bold text-zinc-900">09</p>
+                        <p className="text-2xl font-bold text-zinc-900">4</p>
                         <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
-                            Clients
+                            Language Proficiencies
                         </p>
                     </div>
 
                     <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                        <p className="text-2xl font-bold text-zinc-900">03</p>
+                        <p className="text-2xl font-bold text-zinc-900">3.5</p>
                         <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
-                            Focus Areas
+                            Years of Coding Experience
                         </p>
                     </div>
                 </div>
@@ -75,29 +77,29 @@ const AboutPage = () => {
                 <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
                     <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-                            Section Flow
+                            EDUCATION
                         </p>
-                        <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Stacked content wireframe</h2>
+                        <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Academic Background</h2>
 
                         <div className="mt-6 space-y-4">
                             <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                                <h3 className="text-lg font-semibold text-zinc-900">Intro Block</h3>
+                                <h3 className="text-lg font-semibold text-zinc-900">National University - Manila</h3>
                                 <p className="mt-3 text-sm leading-6 text-zinc-600">
-                                    A simple opening area for biography, role, or supporting information.
+                                    College | BSIT - Mobile and Web Applications | 2022-2027
                                 </p>
                             </article>
 
                             <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                                <h3 className="text-lg font-semibold text-zinc-900">Experience Block</h3>
+                                <h3 className="text-lg font-semibold text-zinc-900">Quezon City Academy Foundation Inc.</h3>
                                 <p className="mt-3 text-sm leading-6 text-zinc-600">
-                                    Repeated section styling keeps the page readable and easy to extend.
+                                    High School | Track Strand: STEM | With High Honors | Graduated 2022
                                 </p>
                             </article>
 
                             <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
-                                <h3 className="text-lg font-semibold text-zinc-900">Details Block</h3>
+                                <h3 className="text-lg font-semibold text-zinc-900">Elyseum Christian School</h3>
                                 <p className="mt-3 text-sm leading-6 text-zinc-600">
-                                    Another placeholder area for skills, notes, or references.
+                                   Elementary | Graduated 2016
                                 </p>
                             </article>
                         </div>
@@ -105,23 +107,23 @@ const AboutPage = () => {
 
                     <div className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-5">
                         <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-                            Visual Grid
+                            Other Hobbies and Favorites
                         </p>
                         <div className="mt-5 grid gap-4 sm:grid-cols-2">
                             <div className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                                <div className="h-12 w-12 border-2 border-zinc-300 bg-zinc-100" />
+                                <img src={spiderman} className="h-100 w-100 object-fill block" />
                             </div>
                             <div className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                                <div className="h-12 w-12 border-2 border-zinc-300 bg-zinc-100" />
+                                <img src={jdm} className="h-100 w-100 object-fill block" />
                             </div>
                             <div className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                                <div className="h-12 w-12 border-2 border-zinc-300 bg-zinc-100" />
+                                <img src={jordan} className="h-120 w-100 object-fill block" />
                             </div>
                             <div className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                                <div className="h-12 w-12 border-2 border-zinc-300 bg-zinc-100" />
+                                <img src={antman} className="h-120 w-100 object-fill block" />
                             </div>
                         </div>
-                        <Button className="mt-5">View Section</Button>
+                        
                     </div>
                 </div>
             </section>
