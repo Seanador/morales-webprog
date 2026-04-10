@@ -1,9 +1,9 @@
-import Button from "../components/Button";
-import photo from '../assets/images/portrait_pic.jpeg';
-import corvette from '../assets/images/corvetteC6.jpg';
-import c63 from '../assets/images/mercedes_c63.jpg';
-import evoX from '../assets/images/evoX.jpg';
-import Footer from "../components/Footer";
+import Button from "../../components/Button";
+import photo from '../../assets/portrait_pic.jpeg';
+import corvette from '../../assets/corvetteC6.jpg';
+import c63 from '../../assets/mercedes_c63.jpg';
+import evoX from '../../assets/evoX.jpg';
+import Footer from "../../components/Footer";
 
 
 const HomePage = () => {

@@ -1,7 +1,7 @@
-import java from './images/java.jpeg';
-import python from './images/python_logo.jpg';
-import nodeJS from './images/nodeExpress.jpg';
-import mongoDB from './images/mongo_db.jpg';
+import java from '../assets/java.jpeg';
+import python from '../assets/python_logo.jpg';
+import nodeJS from '../assets/nodeExpress.jpg';
+import mongoDB from '../assets/mongo_db.jpg';
 
 // enhancement 2
 

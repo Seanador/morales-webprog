@@ -1,10 +1,10 @@
-import Button from '../components/Button';
-import Me from '../assets/images/about_me.jpg';
-import spiderman from '../assets/images/spiderman_hobbies.jpg';   
-import jdm from '../assets/images/jdm.jpg';
-import jordan from '../assets/images/jordan.jpg';
-import antman from '../assets/images/antman.jpg';
-import Footer from "../components/Footer";
+import Button from '../../components/Button';
+import Me from '../../assets/about_me.jpg';
+import spiderman from '../../assets/spiderman_hobbies.jpg';   
+import jdm from '../../assets/jdm.jpg';
+import jordan from '../../assets/jordan.jpg';
+import antman from '../../assets/antman.jpg';
+import Footer from "../../components/Footer";
 
 const AboutPage = () => {
     return (

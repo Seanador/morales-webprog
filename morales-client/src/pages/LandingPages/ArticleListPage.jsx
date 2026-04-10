@@ -1,9 +1,9 @@
-import Button from '../components/Button';
-import java from '../assets/images/java.jpeg';
-import python from '../assets/images/python_logo.jpg';
-import nodeJS from '../assets/images/nodeExpress.jpg';
-import mongoDB from '../assets/images/mongo_db.jpg';
-import Footer from "../components/Footer";
+import Button from '../../components/Button';
+import java from '../../assets/java.jpeg';
+import python from '../../assets/python_logo.jpg';
+import nodeJS from '../../assets/nodeExpress.jpg';
+import mongoDB from '../../assets/mongo_db.jpg';
+import Footer from "../../components/Footer";
 
 
 const ArticleListPage = () => {
