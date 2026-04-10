@@ -3,6 +3,7 @@ import photo from '../assets/images/portrait_pic.jpeg';
 import corvette from '../assets/images/corvetteC6.jpg';
 import c63 from '../assets/images/mercedes_c63.jpg';
 import evoX from '../assets/images/evoX.jpg';
+import Footer from "../components/Footer";
 
 
 const HomePage = () => {
@@ -118,6 +119,7 @@ tenth and final generation of the iconic sports sedan, produced from 2007 to 201
                     </article>
                 </div>
             </section>
+            <Footer />
         </div>
     );
 };

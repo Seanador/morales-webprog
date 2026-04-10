@@ -4,6 +4,7 @@ import spiderman from '../assets/images/spiderman_hobbies.jpg';
 import jdm from '../assets/images/jdm.jpg';
 import jordan from '../assets/images/jordan.jpg';
 import antman from '../assets/images/antman.jpg';
+import Footer from "../components/Footer";
 
 const AboutPage = () => {
     return (
@@ -126,8 +127,9 @@ const AboutPage = () => {
                         
                     </div>
                 </div>
+                
             </section>
-
+            <Footer />
         </div>
     );
 };
