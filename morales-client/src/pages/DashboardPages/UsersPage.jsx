@@ -1,291 +1,617 @@
-import { useState } from "react";
-import { BarChart } from "@mui/x-charts/BarChart";
+import { useMemo, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControlLabel,
+  IconButton,
+  InputAdornment,
+  MenuItem,
+  Paper,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { DataGrid } from "@mui/x-data-grid";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import { PieChart } from "@mui/x-charts/PieChart";
-import Typography from "@mui/material/Typography";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Avatar from "@mui/material/Avatar";
-import TextField from "@mui/material/TextField";
-import InputAdornment from "@mui/material/InputAdornment";
+import usersSeed from "../../data/users.json?raw";
 
-const teal = {
-  50:  "#f0fdfa",
-  100: "#ccfbf1",
-  200: "#99f6e4",
-  400: "#2dd4bf",
-  600: "#0d9488",
-  700: "#0f766e",
-  800: "#115e59",
-  900: "#134e4a",
+const roles = ["admin", "editor", "viewer"];
+const genders = ["male", "female", "other"];
+
+const blankForm = {
+  firstName: "",
+  lastName: "",
+  age: "",
+  gender: "",
+  contactNumber: "",
+  email: "",
+  role: "editor",
+  username: "",
+  password: "",
+  address: "",
+  isActive: true,
 };
 
-const allRows = [
-  { id: 1, lastName: "Snow",       firstName: "Jon",      age: 14,   status: "Active"   },
-  { id: 2, lastName: "Lannister",  firstName: "Cersei",   age: 31,   status: "Inactive" },
-  { id: 3, lastName: "Lannister",  firstName: "Jaime",    age: 31,   status: "Active"   },
-  { id: 4, lastName: "Stark",      firstName: "Arya",     age: 11,   status: "Active"   },
-  { id: 5, lastName: "Targaryen",  firstName: "Daenerys", age: null, status: "Pending"  },
-  { id: 6, lastName: "Melisandre", firstName: null,       age: 150,  status: "Active"   },
-  { id: 7, lastName: "Clifford",   firstName: "Ferrara",  age: 44,   status: "Inactive" },
-  { id: 8, lastName: "Frances",    firstName: "Rossini",  age: 36,   status: "Active"   },
-  { id: 9, lastName: "Roxie",      firstName: "Harvey",   age: 65,   status: "Pending"  },
-];
+const labelize = (value) =>
+  value ? `${value.charAt(0).toUpperCase()}${value.slice(1)}` : "";
 
-const statusStyles = {
-  Active:   { bg: teal[100],  color: teal[800],  dot: teal[600]  },
-  Inactive: { bg: "#fee2e2",  color: "#991b1b",  dot: "#ef4444"  },
-  Pending:  { bg: "#fef9c3",  color: "#854d0e",  dot: "#eab308"  },
+const loadUsers = () => {
+  try {
+    return {
+      users: JSON.parse(usersSeed).map((user, index) => ({
+        id: Number(user.id) || index + 1,
+        firstName: String(user.firstName ?? "").trim(),
+        lastName: String(user.lastName ?? "").trim(),
+        age: String(user.age ?? "").trim(),
+        gender: genders.includes(
+          String(user.gender ?? "")
+            .trim()
+            .toLowerCase(),
+        )
+          ? String(user.gender ?? "")
+              .trim()
+              .toLowerCase()
+          : "",
+        contactNumber: String(user.contactNumber ?? "").trim(),
+        email: String(user.email ?? "")
+          .trim()
+          .toLowerCase(),
+        role: roles.includes(
+          String(user.role ?? "")
+            .trim()
+            .toLowerCase(),
+        )
+          ? String(user.role ?? "")
+              .trim()
+              .toLowerCase()
+          : "editor",
+        username: String(user.username ?? "")
+          .trim()
+          .toLowerCase(),
+        password: String(user.password ?? ""),
+        address: String(user.address ?? "").trim(),
+        isActive: typeof user.isActive === "boolean" ? user.isActive : true,
+      })),
+      error: "",
+    };
+  } catch {
+    return {
+      users: [],
+      error: "Unable to read users from src/assets/users.json.",
+    };
+  }
 };
 
-function getInitials(firstName, lastName) {
-  return `${(firstName || "?")[0]}${(lastName || "?")[0]}`.toUpperCase();
-}
+const seed = loadUsers();
 
-function stringToColor(str) {
-  const palette = [teal[600], teal[700], teal[800], "#0f766e", "#0d9488"];
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
-  return palette[Math.abs(hash) % palette.length];
-}
+const UsersPage = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [users, setUsers] = useState(seed.users);
+  const [modal, setModal] = useState({ open: false, id: null });
+  const [form, setForm] = useState(blankForm);
+  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
-const StatusBadge = ({ value }) => {
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("");
+  const [genderFilter, setGenderFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+
+  const resetFilters = () => {
+    setSearch("");
+    setRoleFilter("");
+    setGenderFilter("");
+    setStatusFilter("");
+  };
+
+  const filteredUsers = useMemo(() => {
+    const q = search.toLowerCase();
+
+    return users.filter((user) => {
+      const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+
+      const matchesSearch =
+        fullName.includes(q) ||
+        user.firstName?.toLowerCase().includes(q) ||
+        user.lastName?.toLowerCase().includes(q) ||
+        user.email?.toLowerCase().includes(q) ||
+        user.username?.toLowerCase().includes(q);
+
+      const matchesRole = roleFilter ? user.role === roleFilter : true;
+      const matchesGender = genderFilter ? user.gender === genderFilter : true;
+
+      const matchesStatus =
+        statusFilter === ""
+          ? true
+          : statusFilter === "active"
+            ? user.isActive
+            : !user.isActive;
+
+      return matchesSearch && matchesRole && matchesGender && matchesStatus;
+    });
+  }, [users, search, roleFilter, genderFilter, statusFilter]);
+
+  const resetForm = () => {
+    setForm({ ...blankForm });
+    setErrors({});
+  };
+
+  const openModal = (user) => {
+    setModal({ open: true, id: user?.id ?? null });
+    setForm(user ? { ...user } : { ...blankForm });
+    setErrors({});
+  };
+
+  const closeModal = () => {
+    setModal({ open: false, id: null });
+    setShowPassword(false);
+    resetForm();
+  };
+
+  const handleChange = ({ target: { name, value, checked, type } }) => {
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validate = () => {
+    const nextErrors = {};
+    const email = form.email.trim().toLowerCase();
+    const username = form.username.trim().toLowerCase();
+
+    // Required fields
+    [
+      ["firstName", "First name"],
+      ["lastName", "Last name"],
+      ["age", "Age"],
+      ["gender", "Gender"],
+      ["contactNumber", "Contact number"],
+      ["email", "Email"],
+      ["role", "Role"],
+      ["username", "Username"],
+      ["password", "Password"],
+      ["address", "Address"],
+    ].forEach(([key, label]) => {
+      if (!String(form[key]).trim()) {
+        nextErrors[key] = `${label} is required.`;
+      }
+    });
+
+    // Age — numbers only
+    if (!nextErrors.age && !/^\d+$/.test(form.age.trim())) {
+      nextErrors.age = "Age must contain numbers only.";
+    }
+
+    // Contact number — exactly 11 digits
+    if (
+      !nextErrors.contactNumber &&
+      !/^\d{11}$/.test(form.contactNumber.trim())
+    ) {
+      nextErrors.contactNumber = "Contact number must be exactly 11 digits.";
+    }
+
+    // Email format
+    if (!nextErrors.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      nextErrors.email = "Enter a valid email address.";
+    }
+
+    // Duplicate email
+    if (
+      !nextErrors.email &&
+      users.some((u) => u.id !== modal.id && u.email === email)
+    ) {
+      nextErrors.email = "Email address already exists.";
+    }
+
+    // Username — no spaces
+    if (!nextErrors.username && /\s/.test(form.username)) {
+      nextErrors.username = "Username must not contain spaces.";
+    }
+
+    // Duplicate username
+    if (
+      !nextErrors.username &&
+      users.some((u) => u.id !== modal.id && u.username === username)
+    ) {
+      nextErrors.username = "Username already exists.";
+    }
+
+    // Password — at least 8 characters
+    if (!nextErrors.password && form.password.trim().length < 8) {
+      nextErrors.password = "Password must be at least 8 characters.";
+    }
+
+    return nextErrors;
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const nextErrors = validate();
+
+    if (Object.keys(nextErrors).length) {
+      setErrors(nextErrors);
+      return;
+    }
+
+    const nextUser = {
+      firstName: form.firstName.trim(),
+      lastName: form.lastName.trim(),
+      age: form.age.trim(),
+      gender: form.gender.trim().toLowerCase(),
+      contactNumber: form.contactNumber.trim(),
+      email: form.email.trim().toLowerCase(),
+      role: form.role.trim().toLowerCase(),
+      username: form.username.trim().toLowerCase(),
+      password: form.password,
+      address: form.address.trim(),
+      isActive: form.isActive,
+    };
+
+    setUsers((prev) =>
+      modal.id
+        ? prev.map((user) =>
+            user.id === modal.id ? { ...user, ...nextUser } : user,
+          )
+        : [
+            ...prev,
+            {
+              id:
+                prev.reduce(
+                  (max, user) => Math.max(max, Number(user.id) || 0),
+                  0,
+                ) + 1,
+              ...nextUser,
+            },
+          ],
+    );
+
+    closeModal();
+  };
+
+  const toggleStatus = (id) => {
+    setUsers((prev) =>
+      prev.map((user) =>
+        user.id === id ? { ...user, isActive: !user.isActive } : user,
+      ),
+    );
+  };
+
+  const fieldProps = (name, label, extra = {}) => ({
+    name,
+    label,
+    value: form[name],
+    onChange: handleChange,
+    error: Boolean(errors[name]),
+    helperText: errors[name],
+    fullWidth: true,
+    ...extra,
+  });
+
+  const columns = [
+    { field: "id", headerName: "ID", width: 80 },
+    {
+      field: "fullName",
+      headerName: "Full name",
+      flex: 1,
+      minWidth: 170,
+      valueGetter: (_, row) => `${row.firstName} ${row.lastName}`.trim(),
+    },
+    { field: "username", headerName: "Username", minWidth: 150 },
+    { field: "age", headerName: "Age", width: 90 },
+    {
+      field: "gender",
+      headerName: "Gender",
+      minWidth: 110,
+      valueGetter: (_, row) => labelize(row.gender),
+    },
+    { field: "contactNumber", headerName: "Contact Number", minWidth: 160 },
+    { field: "email", headerName: "Email", flex: 1.1, minWidth: 220 },
+    {
+      field: "role",
+      headerName: "Role",
+      minWidth: 120,
+      valueGetter: (_, row) => labelize(row.role),
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      minWidth: 120,
+      sortable: false,
+      renderCell: ({ row }) => (
+        <Chip
+          size="small"
+          label={row.isActive ? "Active" : "Inactive"}
+          color={row.isActive ? "success" : "default"}
+          variant={row.isActive ? "filled" : "outlined"}
+        />
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      minWidth: 220,
+      sortable: false,
+      filterable: false,
+      renderCell: ({ row }) => (
+        <Stack direction="row" spacing={1} sx={{ py: 0.3 }}>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => openModal(row)}
+          >
+            Edit
+          </Button>
+          <Button
+            size="small"
+            variant="contained"
+            color={row.isActive ? "warning" : "success"}
+            onClick={() => toggleStatus(row.id)}
+          >
+            {row.isActive ? "Disable" : "Activate"}
+          </Button>
+        </Stack>
+      ),
+    },
+  ];
+
+
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",  
-        justifyContent: "center", 
-        width: "100%",
-        height: "100%",
-      }}
-    >
-      <Typography
+    <Box sx={{ width: "100%", minWidth: 0 }}>
+      {/* Page header */}
+      <Box
         sx={{
-          fontSize: 12,
-          fontWeight: 700,
-          textTransform: "uppercase",
-          color: "#374151",
+          mb: 3,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: 2,
+          flexWrap: "wrap",
         }}
       >
-        {value}
-      </Typography>
+        <Typography variant="h4">Users</Typography>
+        <Button
+          variant="contained"
+          onClick={() => openModal()}
+          sx={{ width: { xs: "100%", sm: "auto" } }}
+        >
+          Add User
+        </Button>
+      </Box>
+
+      {seed.error ? (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {seed.error}
+        </Alert>
+      ) : null}
+
+      {/* Search & filter bar */}
+      <Paper sx={{ p: { xs: 1.5, sm: 2 }, mb: 2 }}>
+        <Stack
+          direction={{ xs: "column", sm: "row" }}
+          spacing={2}
+          alignItems={{ sm: "center" }}
+          flexWrap="wrap"
+        >
+        
+          <TextField
+            label="Search"
+            placeholder="Name, email, or username…"
+            size="small"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            sx={{ flex: 1, minWidth: 200 }}
+          />
+
+         
+          <TextField
+            select
+            label="Role"
+            size="small"
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+            sx={{ minWidth: 130 }}
+          >
+            <MenuItem value="">All Roles</MenuItem>
+            {roles.map((r) => (
+              <MenuItem key={r} value={r}>
+                {labelize(r)}
+              </MenuItem>
+            ))}
+          </TextField>
+
+        
+          <TextField
+            select
+            label="Gender"
+            size="small"
+            value={genderFilter}
+            onChange={(e) => setGenderFilter(e.target.value)}
+            sx={{ minWidth: 130 }}
+          >
+            <MenuItem value="">All Genders</MenuItem>
+            {genders.map((g) => (
+              <MenuItem key={g} value={g}>
+                {labelize(g)}
+              </MenuItem>
+            ))}
+          </TextField>
+
+         
+          <TextField
+            select
+            label="Status"
+            size="small"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            sx={{ minWidth: 130 }}
+          >
+            <MenuItem value="">All Status</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="inactive">Inactive</MenuItem>
+          </TextField>
+
+        
+          <Button
+            variant="outlined"
+            size="medium"
+            onClick={resetFilters}
+            sx={{ whiteSpace: "nowrap", alignSelf: { xs: "flex-start" } }}
+          >
+            Reset Filters
+          </Button>
+        </Stack>
+      </Paper>
+
+      {/* Data table */}
+      <Paper sx={{ p: { xs: 1.5, sm: 2 }, minWidth: 0, overflow: "hidden" }}>
+        {users.length ? (
+          <Box
+            sx={{ height: { xs: 460, sm: 520 }, width: "100%", minWidth: 0 }}
+          >
+            <DataGrid
+              rows={filteredUsers}
+              columns={columns}
+              disableRowSelectionOnClick
+              pageSizeOptions={[5, 10]}
+              initialState={{
+                pagination: { paginationModel: { pageSize: 5, page: 0 } },
+              }}
+              sx={{
+                minWidth: 0,
+                "& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader": {
+                  outline: "none",
+                },
+              }}
+            />
+          </Box>
+        ) : (
+          <Alert severity="info">
+            No users found. Use Add User to create your first record.
+          </Alert>
+        )}
+      </Paper>
+
+      
+      <Dialog
+        open={modal.open}
+        onClose={closeModal}
+        fullWidth
+        fullScreen={isMobile}
+        maxWidth="md"
+      >
+        <Box component="form" onSubmit={handleSubmit}>
+          <DialogTitle>{modal.id ? "Edit User" : "Add User"}</DialogTitle>
+          <DialogContent dividers sx={{ px: { xs: 2, sm: 3 } }}>
+            <Stack spacing={{ xs: 1, pt: 1 }}>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <TextField {...fieldProps("firstName", "First Name")} />
+                <TextField {...fieldProps("lastName", "Last Name")} />
+              </Stack>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <TextField
+                  {...fieldProps("age", "Age", { inputProps: { inputMode: "numeric" } })}
+                />
+                <TextField
+                  {...fieldProps("gender", "Gender", { select: true })}
+                >
+                  {genders.map((gender) => (
+                    <MenuItem key={gender} value={gender}>
+                      {labelize(gender)}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Stack>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <TextField
+                  {...fieldProps("contactNumber", "Contact Number", {
+                    inputProps: { inputMode: "numeric", maxLength: 11 },
+                  })}
+                />
+                <TextField
+                  {...fieldProps("email", "Email Address", { type: "email" })}
+                />
+              </Stack>
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <TextField {...fieldProps("role", "Role", { select: true })}>
+                  {roles.map((role) => (
+                    <MenuItem key={role} value={role}>
+                      {labelize(role)}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField {...fieldProps("username", "Username")} />
+              </Stack>
+              <TextField
+                {...fieldProps("password", "Password", {
+                  type: showPassword ? "text" : "password",
+                  slotProps: {
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            edge="end"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            onMouseDown={(event) => event.preventDefault()}
+                            aria-label={
+                              showPassword ? "Hide password" : "Show password"
+                            }
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  },
+                })}
+              />
+              <TextField
+                {...fieldProps("address", "Address", {
+                  multiline: true,
+                  rows: 3,
+                })}
+              />
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="isActive"
+                    checked={form.isActive}
+                    onChange={handleChange}
+                  />
+                }
+                label={
+                  form.isActive
+                    ? "User status: Active"
+                    : "User status: Inactive"
+                }
+              />
+            </Stack>
+          </DialogContent>
+          <DialogActions sx={{ px: 3, py: 2 }}>
+            <Button onClick={closeModal}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              {modal.id ? "Update User" : "Save User"}
+            </Button>
+          </DialogActions>
+        </Box>
+      </Dialog>
     </Box>
   );
 };
 
-const columns = [
-  {
-    field: "avatar", headerName: "", width: 52, sortable: false,
-    renderCell: (params) => {
-      const initials = getInitials(params.row.firstName, params.row.lastName);
-      return (
-        <Avatar sx={{
-          width: 30, height: 30, fontSize: 11, fontWeight: 700,
-          bgcolor: stringToColor(initials), mt: "10px",
-        }}>
-          {initials}
-        </Avatar>
-      );
-    },
-  },
-  { field: "id",        headerName: "ID",         width: 60  },
-  { field: "firstName", headerName: "First Name", width: 140, editable: true },
-  { field: "lastName",  headerName: "Last Name",  width: 140, editable: true },
-  { field: "age",       headerName: "Age",        type: "number", width: 90, editable: true },
-  {
-    field: "fullName", headerName: "Full Name", width: 180, sortable: false,
-    valueGetter: (value, row) => `${row.firstName || ""} ${row.lastName || ""}`.trim(),
-  },
-  {
-    field: "status", headerName: "Status", width: 130,
-    renderCell: (params) => <StatusBadge value={params.value} />,
-  },
-];
-
-const ageGroups = ["0–18", "19–30", "31–50", "51+"];
-const ageGroupCounts = allRows.reduce((acc, row) => {
-  const age = row.age;
-  if (age === null) return acc;
-  if (age <= 18) acc[0]++;
-  else if (age <= 30) acc[1]++;
-  else if (age <= 50) acc[2]++;
-  else acc[3]++;
-  return acc;
-}, [0, 0, 0, 0]);
-
-const statusCounts = allRows.reduce((acc, row) => {
-  acc[row.status] = (acc[row.status] || 0) + 1;
-  return acc;
-}, {});
-
-const pieData = Object.entries(statusCounts).map(([label, value], id) => ({
-  id, value, label,
-  color: label === "Active" ? teal[600] : label === "Inactive" ? "#ef4444" : "#eab308",
-}));
-
-const activeCount   = allRows.filter((r) => r.status === "Active").length;
-const inactiveCount = allRows.filter((r) => r.status === "Inactive").length;
-const avgAge = (
-  allRows.reduce((s, r) => s + (r.age || 0), 0) /
-  allRows.filter((r) => r.age !== null).length
-).toFixed(1);
-
-const statCards = [
-  { label: "Total Users",    value: allRows.length, accent: teal[600] },
-  { label: "Active Users",   value: activeCount,    accent: teal[700] },
-  { label: "Inactive Users", value: inactiveCount,  accent: "#ef4444" },
-  { label: "Average Age",    value: avgAge,         accent: "#eab308" },
-];
-
-export default function UserPage() {
-  const [search, setSearch] = useState("");
-
-  const filteredRows = allRows.filter((row) => {
-    const term = search.toLowerCase();
-    return (
-      (row.firstName || "").toLowerCase().includes(term) ||
-      (row.lastName  || "").toLowerCase().includes(term) ||
-      (row.status    || "").toLowerCase().includes(term)
-    );
-  });
-
-  return (
-    <div sx={{ p: { xs: 2, md: 4 }, maxWidth: 1200 }}>
-
-      <Box sx={{
-        mb: 3, px: 3, py: 2.5,
-        background: teal[600],
-        borderBottom: `2px solid ${teal[800]}`,
-        borderRadius: 2,
-      }}>
-        <Typography variant="h4" fontWeight={700} sx={{ color: "#fff" }}>
-          Users
-        </Typography>
-        <Typography variant="body2" sx={{ color: teal[100], mt: 0.5 }}>
-          Manage, view, and analyze all registered users.
-        </Typography>
-      </Box>
-
-
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mb: 4 }}>
-        {statCards.map((card) => (
-          <Card key={card.label} elevation={0} sx={{
-            flex: 1,
-            borderTop: `3px solid ${card.accent}`,
-            borderRadius: 2,
-            border: `1px solid ${teal[100]}`,
-            borderTopColor: card.accent,
-          }}>
-            <CardContent sx={{ pb: "14px !important" }}>
-              <Typography sx={{
-                fontSize: 11, fontWeight: 700, color: teal[700],
-                textTransform: "uppercase", letterSpacing: 1, mb: 0.5,
-              }}>
-                {card.label}
-              </Typography>
-              <Typography variant="h4" fontWeight={800} sx={{ color: card.accent }}>
-                {card.value}
-              </Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Stack>
-
-      <Stack direction={{ xs: "column", md: "row" }} spacing={2} sx={{ mb: 4 }}>
-        <Card elevation={0} sx={{
-          flex: 1.4, borderRadius: 2,
-          border: `1px solid ${teal[100]}`,
-        }}>
-          <CardContent>
-            <Typography sx={{ fontWeight: 700, fontSize: 13, color: teal[800], mb: 1, textTransform: "uppercase", letterSpacing: 0.8 }}>
-              Age Distribution
-            </Typography>
-            <BarChart
-              series={[{ data: ageGroupCounts, label: "Users", color: teal[600] }]}
-              height={210}
-              xAxis={[{ data: ageGroups, scaleType: "band", label: "Age Group" }]}
-            />
-          </CardContent>
-        </Card>
-
-        <Card elevation={0} sx={{
-          flex: 1, borderRadius: 2,
-          border: `1px solid ${teal[100]}`,
-        }}>
-          <CardContent>
-            <Typography sx={{ fontWeight: 700, fontSize: 13, color: teal[800], mb: 1, textTransform: "uppercase", letterSpacing: 0.8 }}>
-              Status Breakdown
-            </Typography>
-            <PieChart
-              series={[{ data: pieData, innerRadius: 45 }]}
-              width={290}
-              height={210}
-            />
-          </CardContent>
-        </Card>
-      </Stack>
-
-      <Stack
-        direction={{ xs: "column", sm: "row" }}
-        alignItems={{ sm: "center" }}
-        justifyContent="space-between"
-        spacing={2}
-        sx={{ mb: 1.5 }}
-      >
-        <Typography sx={{ fontWeight: 700, fontSize: 13, color: teal[800], textTransform: "uppercase", letterSpacing: 0.8 }}>
-          User Directory
-        </Typography>
-        
-      </Stack>
-
-      <Box sx={{
-        height: 430, width: "100%",
-        "& .MuiDataGrid-root": {
-          border: `1px solid ${teal[200]}`,
-          borderRadius: "10px",
-          overflow: "hidden",
-          fontSize: 13,
-        },
-        "& .MuiDataGrid-columnHeaders": {
-          bgcolor: teal[50],
-          borderBottom: `2px solid ${teal[200]}`,
-        },
-        "& .MuiDataGrid-columnHeaderTitle": {
-          fontWeight: 700,
-          fontSize: 11,
-          color: teal[800],
-          textTransform: "uppercase",
-          letterSpacing: 0.7,
-        },
-        "& .MuiDataGrid-cell": {
-          color: "#374151",
-          borderBottom: `1px solid ${teal[50]}`,
-        },
-        "& .MuiDataGrid-row:hover": { bgcolor: teal[50] },
-        "& .MuiDataGrid-row.Mui-selected":       { bgcolor: `${teal[100]} !important` },
-        "& .MuiDataGrid-row.Mui-selected:hover": { bgcolor: `${teal[100]} !important` },
-        "& .MuiDataGrid-footerContainer": {
-          borderTop: `1px solid ${teal[200]}`,
-          bgcolor: teal[50],
-        },
-        "& .MuiCheckbox-root.Mui-checked":         { color: teal[600] },
-        "& .MuiCheckbox-root.MuiCheckbox-indeterminate": { color: teal[600] },
-        "& .MuiDataGrid-columnSeparator":          { color: teal[200] },
-        "& .MuiDataGrid-sortIcon":                 { color: teal[600] },
-        "& .MuiTablePagination-root":              { color: teal[700] },
-      }}>
-        <DataGrid
-          rows={filteredRows}
-          columns={columns}
-          initialState={{ pagination: { paginationModel: { pageSize: 5 } } }}
-          pageSizeOptions={[5]}
-          checkboxSelection
-          disableRowSelectionOnClick
-        />
-      </Box>
-    </div>
-  );
-}
+export default UsersPage;

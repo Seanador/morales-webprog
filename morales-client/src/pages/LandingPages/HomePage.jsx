@@ -119,7 +119,7 @@ tenth and final generation of the iconic sports sedan, produced from 2007 to 201
                     </article>
                 </div>
             </section>
-            <Footer />
+           
         </div>
     );
 };

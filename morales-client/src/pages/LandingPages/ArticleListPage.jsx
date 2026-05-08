@@ -97,7 +97,7 @@ const ArticleListPage = () => {
     </article>
   </div>
 </section>
-<Footer />
+
     </div>
   );
 };
