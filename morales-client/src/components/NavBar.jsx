@@ -1,5 +1,4 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import logo from '../assets/SABM_logo.png';
 
 const links = [
   { label: 'Home', to: '/' },
@@ -20,7 +19,7 @@ const NavBar = () => {
 
         <NavLink to="/" className="group flex items-center">
           <img
-            src={logo}
+            src="/assets/images/SABM_logo.png"
             alt="Logo"
             className="h-15 w-auto object-contain transition-opacity duration-200 group-hover:opacity-70"
           />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
 import { styled, useTheme, alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -22,6 +22,7 @@ import ListItemText from "@mui/material/ListItemText";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import ArticleIcon from '@mui/icons-material/Article';
 import Button from "@mui/material/Button";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 
@@ -38,6 +39,7 @@ const RED_700   = "#b91c1c";
 const dashboardNavItems = [
   { label: "Dashboard", title: "Dashboard", to: "/dashboard",         icon: DashboardIcon  },
   { label: "Reports",   title: "Reports",   to: "/dashboard/reports", icon: AssessmentIcon },
+  { label: "Articles",  title: "Articles",  to: "/dashboard/articles", icon: ArticleIcon    },
   { label: "Users",     title: "Users",     to: "/dashboard/users",   icon: PeopleIcon     },
 ];
 
@@ -154,6 +156,33 @@ const DashLayout = () => {
   const pageTitle = getPageTitle(location.pathname);
   const navigate = useNavigate();
 
+  // role-based access control
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const userType = typeof window !== 'undefined' ? localStorage.getItem('type') : null;
+
+  const allowedPathsByType = {
+    admin: dashboardNavItems.map((i) => i.to),
+    editor: dashboardNavItems.filter(i => i.label !== 'Users').map(i => i.to),
+    viewer: [],
+  };
+
+  useEffect(() => {
+
+    if (!token) {
+      navigate('/auth/signin', { replace: true });
+      return;
+    }
+
+    if (location.pathname.startsWith('/dashboard')) {
+      const allowed = allowedPathsByType[userType] || [];
+      if (!allowed.includes(location.pathname)) {
+
+        if (!allowed.length) navigate('/NotFoundPage', { replace: true });
+        else navigate('/dashboard', { replace: true });
+      }
+    }
+  }, [location.pathname, token, userType, navigate]);
+
   const handleDrawerOpen  = () => setOpen(true);
   const handleDrawerClose = () => setOpen(false);
   const handleLogout      = () => navigate("/");
@@ -228,7 +257,13 @@ const DashLayout = () => {
         <Divider sx={{ borderColor: alpha(CYAN_100, 0.15) }} />
 
         <List sx={{ pt: 1 }}>
-          {dashboardNavItems.map((item) => {
+          {dashboardNavItems
+            .filter(item => {
+              const allowed = allowedPathsByType[userType] || [];
+              // Only include nav items that are allowed for this role
+              return allowed.includes(item.to);
+            })
+            .map((item) => {
             const { label, to, icon: NavIcon } = item;
             const isActive = location.pathname === to;
             return (

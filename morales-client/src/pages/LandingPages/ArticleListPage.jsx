@@ -1,12 +1,34 @@
+import { useState, useEffect } from 'react';
 import Button from '../../components/Button';
-import java from '../../assets/java.jpeg';
-import python from '../../assets/python_logo.jpg';
-import nodeJS from '../../assets/nodeExpress.jpg';
-import mongoDB from '../../assets/mongo_db.jpg';
-import Footer from "../../components/Footer";
-
+import { fetchArticles, mapArticleFromApi } from '../../services/ArticleService';
 
 const ArticleListPage = () => {
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadArticles = async () => {
+      try {
+        setLoading(true);
+        const { data } = await fetchArticles();
+        const list = Array.isArray(data) ? data : data?.articles ?? [];
+        const activeArticles = list
+          .filter((a) => a.isActive !== false)
+          .map((a) => ({
+            ...mapArticleFromApi(a),
+            ...a,
+          }));
+        setArticles(activeArticles);
+      } catch (error) {
+        console.error('Error loading articles:', error);
+        setArticles([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadArticles();
+  }, []);
+
   return (
     <div className="flex w-full flex-col gap-6">
       <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
@@ -24,80 +46,49 @@ const ArticleListPage = () => {
         </div>
       </section>
 
-    <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-  <div className="mb-6">
-    <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
-      Featured Articles
-    </p>
-    <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Article card grid</h2>
-  </div>
+      <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <div className="mb-6">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-zinc-500">
+            Featured Articles
+          </p>
+          <h2 className="mt-2 text-2xl font-semibold text-zinc-900">Article card grid</h2>
+        </div>
 
-  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
-      <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-        <img src={mongoDB} className="h-80 w-120 object-fill block" />      </div>
-      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
-        Article 01
-      </p>
-      <h3 className="mt-2 text-lg font-semibold text-zinc-900">MongoDB</h3>
-      <p className="mt-3 text-sm leading-6 text-zinc-600">
-       I am currently using and learning MongoDB, and I am excited to share my progress and insights as I learn this powerful NoSQL database. Despite not being a programming language, SQL drove me to learn MongoDB.
-      </p>
-      <Button to="/articles/mongodb" className="mt-4">
-              Read More
-            </Button>
-    </article>
+        {loading ? (
+          <p className="text-center text-zinc-600">Loading articles...</p>
+        ) : articles.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {articles.map((article, idx) => (
+              <article key={article.id || article._id || idx} className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
+                <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
+                  <img
+                    src={article.imageUrl || '/assets/images/placeholder.jpg'}
+                    alt={article.title}
+                    className="h-80 w-120 object-fill block"
+                    onError={(e) => {
+                      e.target.src = '/assets/images/placeholder.jpg';
+                    }}
+                  />
+                </div>
+                <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
+                  Article {idx + 1}
+                </p>
+                <h3 className="mt-2 text-lg font-semibold text-zinc-900">{article.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-zinc-600">
+                  {article.description || (article.content && article.content[0]) || 'No description available.'}
+                </p>
+                <Button to={`/articles/${article.name}`} className="mt-4">
+                  Read More
+                </Button>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-zinc-600">No articles available.</p>
+        )}
+      </section>
 
-    <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
-      <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-        <img src={nodeJS} className="h-80 w-120 object-fill block" />
-      </div>
-      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
-        Article 02
-      </p>
-      <h3 className="mt-2 text-lg font-semibold text-zinc-900">Node and ExpressJS</h3>
-      <p className="mt-3 text-sm leading-6 text-zinc-600">
-        I am currently using NodeJS and ExpressJS for my team and I's capstone project, running on JavaScript, Node and Express will be used for the backend development of our project!
-      </p>
-      <Button to="/articles/node-and-expressjs" className="mt-4">
-              Read More
-            </Button>
-    </article>
-
-    <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
-      <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-        <img src={python} className="h-80 w-120 object-fill block" />
-      </div>
-      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
-        Article 03
-      </p>
-      <h3 className="mt-2 text-lg font-semibold text-zinc-900">Python</h3>
-      <p className="mt-3 text-sm leading-6 text-zinc-600">
-        I am currently using Python to structure my data in order to create the machine learning predictive model for our capstone project. 
-      </p>
-      <Button to="/articles/python" className="mt-4">
-              Read More
-            </Button>
-    </article>
-
-    <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
-      <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-        <img src={java} className="h-80 w-120 object-fill block" />
-      </div>
-      <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-zinc-500">
-        Article 04
-      </p>
-      <h3 className="mt-2 text-lg font-semibold text-zinc-900">JAVA</h3>
-      <p className="mt-3 text-sm leading-6 text-zinc-600">
-        Java is the first programming language I learned, and it is the language that sparked my interest in programming. I completed school projects using Java and it is certainly the backbone of my programming journey.
-      </p>
-      <Button to="/articles/java" className="mt-4">
-              Read More
-            </Button>
-    </article>
-  </div>
-</section>
-
+  
     </div>
   );
 };

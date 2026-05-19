@@ -1,17 +1,62 @@
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { loginUser } from '../../services/UserService';
 
 const inputClasses =
   'mt-1.5 w-full rounded-xl border border-white/10 bg-white/[0.06] px-4 py-3 text-sm text-teal-50 outline-none transition placeholder:text-white/30 focus:border-teal-400 focus:bg-white/[0.09]';
 
 const SignInPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      const { data } = await loginUser({ email, password });
+      console.log('Login successful:', data);
+
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('firstName', data.firstName);
+      localStorage.setItem('type', data.type);
+
+      if (rememberMe) {
+        localStorage.setItem('rememberEmail', email);
+      } else {
+        localStorage.removeItem('rememberEmail');
+      }
+
+      navigate('/dashboard', {
+        state: { firstName: data.firstName, type: data.type },
+      });
+    } catch (err) {
+      console.error('Login failed:', err.response?.data?.message || err.message);
+      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-   <div className="flex min-h-screen items-center justify-center px-4 py-8">
+    <div className="flex min-h-screen items-center justify-center px-4 py-8">
       <div className="w-full max-w-sm rounded-3xl border border-white/10 bg-teal-800 px-8 py-10">
 
         <h1 className="text-2xl font-semibold tracking-tight text-teal-50">Log In</h1>
         <p className="mt-1.5 text-sm text-teal-400">Access your account to continue.</p>
 
-        <div className="mt-8 space-y-5">
+        {error && (
+          <div className="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleLogin} className="mt-8 space-y-5">
           <div>
             <label
               htmlFor="signin-email"
@@ -24,6 +69,9 @@ const SignInPage = () => {
               type="email"
               placeholder="you@example.com"
               autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
               className={inputClasses}
             />
           </div>
@@ -40,6 +88,9 @@ const SignInPage = () => {
               type="password"
               placeholder="••••••••"
               autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
               className={inputClasses}
             />
             <p className="mt-1.5 text-xs text-teal-500">
@@ -51,6 +102,8 @@ const SignInPage = () => {
             <label className="flex cursor-pointer items-center gap-2 text-xs text-teal-300">
               <input
                 type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-3.5 w-3.5 rounded border-white/20 accent-teal-400"
               />
               <span>Remember me</span>
@@ -63,12 +116,12 @@ const SignInPage = () => {
             </button>
           </div>
 
-         
           <button
             type="submit"
-            className="w-full rounded-full bg-cyan-100 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-teal-900 shadow-sm transition hover:opacity-90 active:scale-[0.98]"
+            disabled={loading}
+            className="w-full rounded-full bg-cyan-100 py-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-teal-900 shadow-sm transition hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Log In
+            {loading ? 'Logging In...' : 'Log In'}
           </button>
 
           <div className="grid grid-cols-2 gap-3 pt-1">
@@ -85,7 +138,7 @@ const SignInPage = () => {
               </button>
             ))}
           </div>
-        </div>
+        </form>
 
         {/* Footer */}
         <div className="mt-8 border-t border-white/10 pt-5 text-center text-xs text-teal-500">

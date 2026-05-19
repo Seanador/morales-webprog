@@ -1,9 +1,4 @@
 import Button from '../../components/Button';
-import Me from '../../assets/about_me.jpg';
-import spiderman from '../../assets/spiderman_hobbies.jpg';   
-import jdm from '../../assets/jdm.jpg';
-import jordan from '../../assets/jordan.jpg';
-import antman from '../../assets/antman.jpg';
 import Footer from "../../components/Footer";
 
 const AboutPage = () => {
@@ -12,7 +7,7 @@ const AboutPage = () => {
             <section className="border-y-2 border-zinc-900 bg-zinc-50 px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
                 <div className="grid gap-8 lg:grid-cols-2 lg:items-center">
                     <div className="rounded-[1.25rem] border-2 border-solid border-zinc-900 overflow-hidden w-100 h-100 ml-50">
-                        <img src={Me} className="h-100 w-100 object-fill block" />
+                        <img src="/assets/images/about_me.jpg" className="h-100 w-100 object-fill block" />
                     </div>
 
                     <div>
@@ -112,16 +107,16 @@ const AboutPage = () => {
                         </p>
                         <div className="mt-5 grid gap-4 sm:grid-cols-2">
                             <div className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                                <img src={spiderman} className="h-100 w-100 object-fill block" />
+                                <img src="/assets/images/spiderman_hobbies.jpg" className="h-100 w-100 object-fill block" />
                             </div>
                             <div className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                                <img src={jdm} className="h-100 w-100 object-fill block" />
+                                <img src="/assets/images/jdm.jpg" className="h-100 w-100 object-fill block" />
                             </div>
                             <div className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                                <img src={jordan} className="h-120 w-100 object-fill block" />
+                                <img src="/assets/images/jordan.jpg" className="h-120 w-100 object-fill block" />
                             </div>
                             <div className="flex aspect-square items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                                <img src={antman} className="h-120 w-100 object-fill block" />
+                                <img src="/assets/images/antman.jpg" className="h-120 w-100 object-fill block" />
                             </div>
                         </div>
                         

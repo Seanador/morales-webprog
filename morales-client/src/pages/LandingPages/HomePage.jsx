@@ -1,8 +1,4 @@
 import Button from "../../components/Button";
-import photo from '../../assets/portrait_pic.jpeg';
-import corvette from '../../assets/corvetteC6.jpg';
-import c63 from '../../assets/mercedes_c63.jpg';
-import evoX from '../../assets/evoX.jpg';
 import Footer from "../../components/Footer";
 
 
@@ -32,7 +28,7 @@ const HomePage = () => {
                     </div>
 
                      <div className="rounded-[1.25rem] border-2 border-dashed border-zinc-300 overflow-hidden w-100 ml-20">
-                        <img src={photo} className="h-100 w-100 object-fill block" />
+                        <img src="/assets/images/portrait_pic.jpeg" className="h-100 w-100 object-fill block" />
                     </div>
                 </div>
             </section>
@@ -87,7 +83,7 @@ const HomePage = () => {
                 <div className="grid gap-4 md:grid-cols-3">
                     <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
                         <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                            <img src={corvette} className="h-100 w-140 object-fill block" />
+                            <img src="/assets/images/corvetteC6.jpg" className="h-100 w-140 object-fill block" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-zinc-900">Corvette C6</h3>
                         <p className="mt-3 text-sm leading-6 text-zinc-600">
@@ -98,7 +94,7 @@ const HomePage = () => {
 
                     <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
                         <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                            <img src={c63} className="h-100 w-140 object-fill block" />
+                            <img src="/assets/images/mercedes_c63.jpg" className="h-100 w-140 object-fill block" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-zinc-900">AMG C63</h3>
                         <p className="mt-3 text-sm leading-6 text-zinc-600">
@@ -108,7 +104,7 @@ an iconic high-performance luxury car, most famously featuring a handcrafted 4.0
 
                     <article className="rounded-3xl border-2 border-zinc-900 bg-zinc-100 p-4">
                         <div className="flex aspect-4/3 items-center justify-center rounded-[1.25rem] bg-zinc-200">
-                            <img src={evoX} className="h-100 w-140 object-fill block" />
+                            <img src="/assets/images/evoX.jpg" className="h-100 w-140 object-fill block" />
                         </div>
                         <h3 className="mt-4 text-lg font-semibold text-zinc-900">Evo X</h3>
                         <p className="mt-3 text-sm leading-6 text-zinc-600">

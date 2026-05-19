@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import logo from "../assets/SABM_logo.png";
 
 const AuthLayout = () => {
   return (
@@ -8,7 +7,7 @@ const AuthLayout = () => {
         <div className="flex items-center justify-center border-b-2 border-zinc-300 bg-cyan-100 p-8 sm:p-10 lg:border-r-2 lg:border-zinc-300 lg:p-16">
           <div className="flex w-full max-w-md items-center justify-center rounded-[2rem] border-2  bg-zinc-100/60 p-8 sm:p-10">
             <img
-              src={logo}
+              src="/assets/images/SABM_logo.png"
               alt="Logo"
               className="w-full max-w-[18rem] object-contain"
             />

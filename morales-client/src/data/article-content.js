@@ -1,15 +1,10 @@
-import java from '../assets/java.jpeg';
-import python from '../assets/python_logo.jpg';
-import nodeJS from '../assets/nodeExpress.jpg';
-import mongoDB from '../assets/mongo_db.jpg';
-
 // enhancement 2
 
 const articles = [
   {
     name: "mongodb",
     title: "MongoDB",
-    image: mongoDB,
+    image: '/assets/images/mongo_db.jpg',
     content: [
       "I am currently using and learning MongoDB, and I am excited to share my progress and insights as I learn this powerful NoSQL database. Despite not being a programming language, SQL drove me to learn MongoDB.",
       "MongoDB is a document-oriented NoSQL database that stores data in flexible, JSON-like documents instead of traditional rows and columns.",
@@ -20,7 +15,7 @@ const articles = [
   {
     name: "node-and-expressjs",
     title: "Node and ExpressJS",
-    image: nodeJS,
+    image: '/assets/images/nodeExpress.jpg',
     content: [
       "I am currently using NodeJS and ExpressJS for my team and I's capstone project, running on JavaScript, Node and Express will be used for the backend development of our project!",
       "Node.js is a JavaScript runtime built on Chrome's V8 engine that allows developers to run JavaScript on the server side.",
@@ -31,7 +26,7 @@ const articles = [
   {
     name: "python",
     title: "Python",
-    image: python,
+    image: '/assets/images/python_logo.jpg',
     content: [
       "I am currently using Python to structure my data in order to create the machine learning predictive model for our capstone project.",
       "Python is a high-level, interpreted programming language known for its simplicity, readability, and versatility across many domains.",
@@ -42,7 +37,7 @@ const articles = [
   {
     name: "java",
     title: "JAVA",
-    image: java,
+    image: '/assets/images/java.jpeg',
     content: [
       "Java is the first programming language I learned, and it is the language that sparked my interest in programming. I completed school projects using Java and it is certainly the backbone of my programming journey.",
       "Java is a class-based, object-oriented programming language designed to have as few implementation dependencies as possible.",
